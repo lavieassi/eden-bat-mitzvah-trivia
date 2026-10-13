@@ -1,0 +1,15 @@
+{
+  "name": "eden-bat-mitzvah-trivia",
+  "version": "1.0.0",
+  "description": "Multiplayer Bat Mitzvah Trivia Game for Eden",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "qrcode": "^1.5.3",
+    "socket.io": "^4.7.5"
+  }
+}

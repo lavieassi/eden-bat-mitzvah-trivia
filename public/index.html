@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>טריוויית בת המצווה של עדן 👑✨</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="badge">🌸 אירוע בת המצווה של עדן 🌸</div>
+      <h1 class="header-title">כמה אתם מכירים את עדן?</h1>
+      <p class="subtitle">משחק טריוויה קבוצתי אינטראקטיבי וחגיגי! 💜✨</p>
+    </header>
+
+    <main class="glass-card">
+      <!-- Eden's Photo Avatar -->
+      <div class="eden-avatar-wrapper">
+        <img src="images/eden_heart.jpg" alt="עדן כלת הבת מצווה" class="eden-avatar-img">
+      </div>
+
+      <!-- QR Quick Join Banner -->
+      <div id="qrScannedBanner" style="display: none; margin-bottom: 20px; background: rgba(255,209,102,0.15); border: 2px solid var(--gold-accent); padding: 16px; border-radius: var(--radius-md); text-align: center;">
+        <p style="color: var(--gold-accent); font-weight: 800; font-size: 1.15rem; margin-bottom: 8px;">
+          סרקת קוד להצטרפות לחדר <span id="qrScannedRoom">----</span>! 📱
+        </p>
+        <button id="quickJoinBtn" class="btn-primary" style="background: var(--gold-gradient); color: #2A0845;">
+          🚀 כניסה מהירה לחדר <span id="qrScannedRoomBtn">----</span>
+        </button>
+      </div>
+
+      <h2 style="color: var(--gold-accent); margin-bottom: 18px; font-size: 1.35rem; text-align: center; font-weight: 800;">
+        הצטרפות למשחק מהנייד 📲
+      </h2>
+      
+      <form id="joinForm">
+        <div class="input-group">
+          <label class="input-label" for="playerName">השם שלך (כפי שיופיע במשחק):</label>
+          <input type="text" id="playerName" class="input-field" placeholder="לדוגמה: אורי / שירה מחולון" required autocomplete="name">
+        </div>
+
+        <div class="input-group">
+          <label class="input-label" for="roomCode">קוד חדר (4 ספרות מהמסך הגדול):</label>
+          <input type="number" id="roomCode" class="input-field" placeholder="לדוגמה: 4821" required autocomplete="off">
+        </div>
+
+        <button type="submit" class="btn-primary" style="margin-top: 14px;">
+          יאללה, מתחילים! 🚀🎉
+        </button>
+      </form>
+
+      <div style="margin-top: 25px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.12); text-align: center;">
+        <p style="color: var(--text-dim); font-size: 0.95rem; margin-bottom: 10px;">מנהל/ת האירוע? לחצו למסך המנחה והקרנה:</p>
+        <a href="host.html" style="color: var(--purple-light); text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: rgba(255,255,255,0.06); border-radius: 50px; border: 1px solid rgba(199,125,255,0.3);">
+          👑 לוח בקרה למנחה ומסך ענק ➔
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script src="audio.js"></script>
+  <script>
+    // Audio on first interaction
+    document.body.addEventListener('click', () => {
+      if (window.soundEngine) window.soundEngine.init();
+    }, { once: true });
+
+    let playerId = localStorage.getItem('eden_trivia_playerId');
+    if (!playerId) {
+      playerId = 'player_' + Math.random().toString(36).substring(2, 9) + Date.now();
+      localStorage.setItem('eden_trivia_playerId', playerId);
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomParam = urlParams.get('room');
+
+    if (roomParam) {
+      document.getElementById('roomCode').value = roomParam;
+      localStorage.setItem('eden_trivia_roomCode', roomParam);
+
+      document.getElementById('qrScannedBanner').style.display = 'block';
+      document.getElementById('qrScannedRoom').innerText = roomParam;
+      document.getElementById('qrScannedRoomBtn').innerText = roomParam;
+
+      document.getElementById('quickJoinBtn').addEventListener('click', () => {
+        let name = document.getElementById('playerName').value.trim() || localStorage.getItem('eden_trivia_playerName');
+        if (!name) {
+          name = prompt('אנא הכנס/י את שמך למשחק:') || 'אורח/ת';
+        }
+        localStorage.setItem('eden_trivia_playerName', name);
+        
+        if (window.confetti) confetti();
+        setTimeout(() => {
+          window.location.href = `player.html?room=${roomParam}`;
+        }, 300);
+      });
+    }
+
+    const savedName = localStorage.getItem('eden_trivia_playerName');
+    if (savedName) {
+      document.getElementById('playerName').value = savedName;
+    }
+
+    document.getElementById('joinForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const playerName = document.getElementById('playerName').value.trim();
+      const roomCode = document.getElementById('roomCode').value.trim();
+
+      if (playerName && roomCode) {
+        if (window.soundEngine) window.soundEngine.playClick();
+        if (window.confetti) confetti();
+        localStorage.setItem('eden_trivia_playerName', playerName);
+        localStorage.setItem('eden_trivia_roomCode', roomCode);
+
+        setTimeout(() => {
+          window.location.href = `player.html?room=${roomCode}`;
+        }, 350);
+      }
+    });
+  </script>
+</body>
+</html>

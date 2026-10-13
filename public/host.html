@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>לוח בקרה למנחה - טריוויית בת המצווה של עדן 👑</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+  <div class="container container-wide">
+    <!-- Header -->
+    <header style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px;">
+      <div style="text-align: right;">
+        <div class="badge">👑 מסך ענק ומנחה המשחק</div>
+        <h1 class="header-title" style="font-size: 2.3rem;">טריוויית בת המצווה של עדן ✨</h1>
+      </div>
+      <div>
+        <button id="soundToggleBtn" class="sound-btn" title="הפעל/השתק סאונד">🔊</button>
+      </div>
+    </header>
+
+    <!-- Setup View -->
+    <main id="setupView" class="glass-card" style="text-align: center; max-width: 650px; margin: 0 auto; width: 100%;">
+      <!-- Eden Welcome Avatar -->
+      <div class="eden-avatar-wrapper">
+        <img src="images/eden_heart.jpg" alt="עדן כלת הבת מצווה" class="eden-avatar-img">
+      </div>
+
+      <h2 style="color: var(--gold-accent); margin-bottom: 10px; font-size: 1.6rem; font-weight: 800;">
+        פתיחת משחק טריוויה לעדן
+      </h2>
+      <p style="color: var(--text-muted); font-size: 1.05rem; margin-bottom: 22px;">
+        המשחק כולל 20 שאלות היכרות כיפיות ומפתיעות על עדן כלת השמחה 💖
+      </p>
+
+      <div class="input-group">
+        <label class="input-label" for="questionCountSelect">🎯 כמות שאלות למשחק:</label>
+        <select id="questionCountSelect" class="input-field">
+          <option value="20" selected>כל 20 השאלות (משחק מלא ומומלץ - כ-15-20 דקות)</option>
+          <option value="15">15 שאלות נבחרות</option>
+          <option value="10">10 שאלות (משחק קצר ומהיר - כ-10 דקות)</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label" for="timerDurationSelect">⏱️ זמן מענה לכל שאלה:</label>
+        <select id="timerDurationSelect" class="input-field">
+          <option value="20">20 שניות (מהיר וקצבי)</option>
+          <option value="30" selected>30 שניות (מומלץ לאירועים ולמשפחה)</option>
+          <option value="45">45 שניות (קצב רגוע יותר)</option>
+          <option value="60">60 שניות (זמן ממושך)</option>
+        </select>
+      </div>
+
+      <div class="input-group" style="display: flex; align-items: center; justify-content: flex-start; gap: 10px; margin-top: 10px;">
+        <input type="checkbox" id="shuffleCheckbox" style="width: 20px; height: 20px; accent-color: var(--purple-primary); cursor: pointer;">
+        <label for="shuffleCheckbox" style="font-size: 1rem; color: #FFFFFF; cursor: pointer; font-weight: 600;">
+          ערבב את סדר השאלות באופן אקראי
+        </label>
+      </div>
+
+      <button id="createRoomBtn" class="btn-primary" style="margin-top: 20px;">
+        פתח חדר משחק והצג קוד להקרנה 🎲
+      </button>
+    </main>
+
+    <!-- Lobby / Dashboard View (Projector Waiting Room) -->
+    <main id="lobbyDashboardView" class="glass-card" style="display: none;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center;">
+        
+        <!-- Right side: QR & Join Info -->
+        <div class="qr-box" style="margin: 0;">
+          <div class="qr-label">📱 סרקו עם המצלמה בטלפון להצטרפות:</div>
+          <img id="qrImage" src="" alt="קוד QR להצטרפות" style="max-width: 250px; width: 100%; border-radius: 16px; border: 3px solid var(--purple-dark); margin: 6px 0;">
+          <div id="joinUrlText" style="color: var(--purple-dark); font-weight: 800; font-size: 0.95rem; direction: ltr; background: rgba(226, 217, 243, 0.4); padding: 8px 12px; border-radius: 8px; width: 100%; text-align: center; word-break: break-all;"></div>
+        </div>
+
+        <!-- Left side: Eden's Photo & Room Code & Action -->
+        <div style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+          <div class="eden-hero-frame" style="max-width: 220px; margin-bottom: 12px;">
+            <img src="images/eden_swing.jpg" alt="עדן על הנדנדה" style="height: 200px;">
+          </div>
+
+          <div style="color: var(--text-muted); font-size: 1.05rem; font-weight: 600;">קוד חדר לכניסה מהירה:</div>
+          <div id="displayRoomCode" style="font-size: 3.8rem; font-weight: 900; color: var(--gold-accent); letter-spacing: 5px; text-shadow: 0 0 25px rgba(255, 209, 102, 0.6); line-height: 1.1; margin: 4px 0 10px;">----</div>
+          
+          <div style="margin-bottom: 14px;">
+            <span class="badge" id="playerCountBadge" style="font-size: 1.15rem; padding: 6px 20px;">0 אורחים מחוברים</span>
+          </div>
+
+          <button id="startGameBtn" class="btn-primary" style="font-size: 1.25rem; padding: 16px 22px; width: 100%; max-width: 280px;">
+            🚀 מתחילים את המשחק!
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Connected Guests List -->
+      <div style="margin-top: 24px; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 16px;">
+        <h3 style="color: var(--gold-accent); font-size: 1.15rem; margin-bottom: 10px; font-weight: 700;">
+          ✨ אורחים בחדר ההמתנה:
+        </h3>
+        <div id="connectedPlayersList" style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 140px; overflow-y: auto; padding: 8px; background: rgba(0,0,0,0.25); border-radius: 12px; min-height: 45px;">
+          <span style="color: var(--text-dim); font-size: 0.95rem;">ממתינים להצטרפות האורחים... 📲</span>
+        </div>
+      </div>
+    </main>
+
+    <!-- Active Question Monitor (Big Screen during Game) -->
+    <main id="activeGameMonitor" class="glass-card" style="display: none;">
+      
+      <!-- Top Bar: Counter & Live Answer Count & Controls -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span id="questionCounterBadge" class="badge" style="font-size: 1.05rem;">שאלה 1 מתוך 20</span>
+          <span id="categoryBadge" class="celebrate-tag">טעמים ואוכל</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span id="answerProgressBadge" style="color: var(--gold-accent); font-weight: 800; font-size: 1.05rem; background: rgba(0,0,0,0.3); padding: 5px 14px; border-radius: 30px; border: 1px solid rgba(255,209,102,0.3);">
+            ענו 0 מתוך 0 אורחים
+          </span>
+          <button id="pauseTimerBtn" class="btn-secondary" style="width: auto; padding: 6px 14px; font-size: 0.95rem;">⏸️ עצור</button>
+        </div>
+      </div>
+
+      <!-- Timer & Progress Bar -->
+      <div class="timer-container" style="margin-bottom: 16px;">
+        <div id="hostTimerCircle" class="timer-circle">30</div>
+        <div class="progress-bar-bg" style="height: 16px;">
+          <div id="hostProgressBarFill" class="progress-bar-fill"></div>
+        </div>
+      </div>
+
+      <!-- Question Photo Frame (Dynamic) -->
+      <div id="hostQuestionPhotoFrame" class="eden-question-frame" style="display: none;">
+        <img id="hostQuestionImage" src="" alt="תמונת שאלה של עדן">
+      </div>
+
+      <!-- Main Question Display -->
+      <div id="hostQuestionText" class="question-text" style="font-size: 2rem; min-height: 60px; margin-bottom: 22px;">
+        טוען שאלה...
+      </div>
+
+      <!-- 2 or 4 Kahoot Option Cards -->
+      <div id="hostOptionsGrid" class="options-grid grid-4" style="gap: 14px; margin-bottom: 20px;">
+        <!-- Filled dynamically -->
+      </div>
+
+      <!-- Host Action Controls -->
+      <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 14px;">
+        <button id="revealAnswerEarlyBtn" class="btn-primary" style="max-width: 260px; background: var(--gold-gradient); color: #2A0845;">
+          💡 חשוף תשובה עכשיו
+        </button>
+        <button id="nextQuestionBtn" class="btn-primary" style="max-width: 260px; display: none;">
+          שאלה הבאה ➔
+        </button>
+        <button id="endGameEarlyBtn" class="btn-secondary" style="max-width: 170px; background: rgba(231,76,60,0.25); border-color: #E74C3C; color: #FFF;">
+          🏁 סיים משחק
+        </button>
+      </div>
+
+      <!-- Explanation Box upon reveal -->
+      <div id="hostExplanationBox" class="explanation-box" style="display: none;">
+        <div class="explanation-title">
+          <span>💖 עובדה וטריוויה על עדן:</span>
+        </div>
+        <div id="hostExplanationText" class="explanation-body" style="font-size: 1.2rem; font-weight: 600;"></div>
+      </div>
+
+      <!-- Live Top 5 Leaderboard after each question -->
+      <div id="hostMiniLeaderboard" style="display: none; margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.15);">
+        <h3 style="color: var(--gold-accent); font-size: 1.25rem; margin-bottom: 10px; font-weight: 800; text-align: center;">
+          🏆 המובילים בטבלה כרגע:
+        </h3>
+        <div id="hostMiniLeaderboardList" class="leaderboard-list" style="max-width: 480px; margin: 0 auto;">
+          <!-- Filled dynamically -->
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Finished / Grand Finale Podium View -->
+    <main id="finishedPodiumView" class="glass-card" style="display: none; text-align: center;">
+      <!-- Eden Celebrating Photo -->
+      <div class="eden-avatar-wrapper" style="margin-bottom: 10px;">
+        <img src="images/eden_bubbles.jpg" alt="עדן חוגגת בת מצווה" class="eden-avatar-img" style="width: 140px; height: 140px; border-width: 5px;">
+      </div>
+
+      <h2 style="font-size: 2.3rem; font-weight: 900; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px;">
+        אלופי הטריוויה של עדן! 👑✨
+      </h2>
+      <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 18px;">
+        תודה רבה לכל האורחים והמשפחה שהשתתפו וחגגו עם עדן! 💖
+      </p>
+
+      <!-- Olympic Style Podium (Top 3) -->
+      <div id="podiumWrapper" class="podium-wrapper">
+        <!-- 2nd place -->
+        <div id="podium2" class="podium-col podium-2">
+          <div class="podium-avatar">🥈</div>
+          <div id="podium2Name" class="podium-name">-</div>
+          <div id="podium2Score" class="podium-score">0 נק׳</div>
+          <div class="podium-block">2</div>
+        </div>
+
+        <!-- 1st place -->
+        <div id="podium1" class="podium-col podium-1">
+          <div class="podium-avatar">👑🥇</div>
+          <div id="podium1Name" class="podium-name">-</div>
+          <div id="podium1Score" class="podium-score">0 נק׳</div>
+          <div class="podium-block">1</div>
+        </div>
+
+        <!-- 3rd place -->
+        <div id="podium3" class="podium-col podium-3">
+          <div class="podium-avatar">🥉</div>
+          <div id="podium3Name" class="podium-name">-</div>
+          <div id="podium3Score" class="podium-score">0 נק׳</div>
+          <div class="podium-block">3</div>
+        </div>
+      </div>
+
+      <!-- Awards & Fun Stats -->
+      <div id="gameAwardsBox" style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; text-align: center;">
+        <div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,209,102,0.3); padding: 12px; border-radius: 14px;">
+          <div style="font-size: 1.6rem;">⚡</div>
+          <div style="font-weight: 800; color: var(--gold-accent); margin-bottom: 4px;">הכי מהיר/ה במשחק:</div>
+          <div id="statFastestPlayer" style="font-weight: 700; font-size: 1.1rem; color: #FFF;">-</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(199,125,255,0.3); padding: 12px; border-radius: 14px;">
+          <div style="font-size: 1.6rem;">🎯</div>
+          <div style="font-weight: 800; color: var(--purple-light); margin-bottom: 4px;">הכי מדויק/ת במשחק:</div>
+          <div id="statAccuratePlayer" style="font-weight: 700; font-size: 1.1rem; color: #FFF;">-</div>
+        </div>
+      </div>
+
+      <!-- Full Leaderboard Table -->
+      <div style="margin-top: 22px; text-align: right;">
+        <h3 style="color: var(--gold-accent); font-size: 1.2rem; font-weight: 800; margin-bottom: 12px; text-align: center;">
+          📜 דירוג כל האורחים והמשתתפים:
+        </h3>
+        <div id="fullLeaderboardList" class="leaderboard-list" style="max-height: 240px; overflow-y: auto;">
+          <!-- Filled dynamically -->
+        </div>
+      </div>
+
+      <div style="margin-top: 26px;">
+        <button onclick="window.location.reload()" class="btn-primary" style="max-width: 280px; margin: 0 auto;">
+          פתח משחק חדש 🎲
+        </button>
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="audio.js"></script>
+  <script>
+    const socket = io();
+    let currentRoomCode = null;
+    let totalQuestionsCount = 20;
+    let currentQuestionDuration = 30;
+    let isSoundMuted = false;
+
+    // Shapes for Kahoot answers
+    const optionShapes = ['▲', '◆', '●', '■'];
+
+    // Sound toggle
+    const soundBtn = document.getElementById('soundToggleBtn');
+    soundBtn.addEventListener('click', () => {
+      if (window.soundEngine) {
+        isSoundMuted = window.soundEngine.toggleMute();
+        soundBtn.innerText = isSoundMuted ? '🔇' : '🔊';
+      }
+    });
+
+    // Create room
+    document.getElementById('createRoomBtn').addEventListener('click', () => {
+      if (window.soundEngine) window.soundEngine.playClick();
+      const count = document.getElementById('questionCountSelect').value;
+      const duration = document.getElementById('timerDurationSelect').value;
+      const shuffle = document.getElementById('shuffleCheckbox').checked;
+
+      socket.emit('create_room', {
+        questionCount: count,
+        timerDuration: duration,
+        shuffle: shuffle
+      });
+    });
+
+    socket.on('room_created', (data) => {
+      currentRoomCode = data.roomCode;
+      totalQuestionsCount = data.totalQuestions;
+      currentQuestionDuration = data.timerDuration;
+
+      document.getElementById('setupView').style.display = 'none';
+      document.getElementById('lobbyDashboardView').style.display = 'block';
+      document.getElementById('displayRoomCode').innerText = data.roomCode;
+
+      // Detect best URL for phones
+      fetch('/api/info')
+        .then(res => res.json())
+        .then(info => {
+          let hostAddress = window.location.host;
+          if ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && info.primaryIp && info.primaryIp !== 'localhost') {
+            hostAddress = `${info.primaryIp}:${info.port}`;
+          }
+          const joinUrl = `${window.location.protocol}//${hostAddress}/?room=${data.roomCode}`;
+          document.getElementById('joinUrlText').innerText = joinUrl;
+
+          fetch(`/api/qr?url=${encodeURIComponent(joinUrl)}`)
+            .then(r => r.json())
+            .then(qrRes => {
+              if (qrRes.qr) {
+                document.getElementById('qrImage').src = qrRes.qr;
+              }
+            });
+        })
+        .catch(() => {
+          const fallbackUrl = `${window.location.origin}/?room=${data.roomCode}`;
+          document.getElementById('joinUrlText').innerText = fallbackUrl;
+          fetch(`/api/qr?url=${encodeURIComponent(fallbackUrl)}`)
+            .then(r => r.json())
+            .then(qrRes => {
+              if (qrRes.qr) document.getElementById('qrImage').src = qrRes.qr;
+            });
+        });
+    });
+
+    // Player joined / updated
+    socket.on('player_list_updated', (players) => {
+      document.getElementById('playerCountBadge').innerText = `${players.length} אורחים מחוברים`;
+      const list = document.getElementById('connectedPlayersList');
+      if (players.length === 0) {
+        list.innerHTML = '<span style="color: var(--text-dim); font-size: 0.95rem;">ממתינים להצטרפות האורחים... 📲</span>';
+        return;
+      }
+
+      list.innerHTML = '';
+      players.forEach(p => {
+        const item = document.createElement('div');
+        item.style.cssText = 'background: rgba(199, 125, 255, 0.2); border: 1px solid var(--purple-light); padding: 6px 14px; border-radius: 30px; font-weight: 700; color: #FFFFFF; display: flex; align-items: center; gap: 6px; animation: fadeIn 0.3s;';
+        item.innerHTML = `<span>🌸</span> <span>${p.name}</span>`;
+        list.appendChild(item);
+      });
+    });
+
+    // Start Game button
+    document.getElementById('startGameBtn').addEventListener('click', () => {
+      if (window.soundEngine) window.soundEngine.playRoundStart();
+      socket.emit('start_game', { roomCode: currentRoomCode });
+    });
+
+    // Question Round Started
+    socket.on('new_question', (data) => {
+      if (window.soundEngine) window.soundEngine.playRoundStart();
+
+      document.getElementById('lobbyDashboardView').style.display = 'none';
+      document.getElementById('activeGameMonitor').style.display = 'block';
+      document.getElementById('hostMiniLeaderboard').style.display = 'none';
+      document.getElementById('hostExplanationBox').style.display = 'none';
+
+      document.getElementById('revealAnswerEarlyBtn').style.display = 'block';
+      document.getElementById('nextQuestionBtn').style.display = 'none';
+
+      document.getElementById('questionCounterBadge').innerText = `שאלה ${data.questionIndex + 1} מתוך ${data.totalQuestions}`;
+      document.getElementById('categoryBadge').innerText = data.category || 'טריוויה על עדן 💖';
+      document.getElementById('hostQuestionText').innerText = data.question;
+
+      // Show question image if present
+      const photoFrame = document.getElementById('hostQuestionPhotoFrame');
+      const photoImg = document.getElementById('hostQuestionImage');
+      if (data.image) {
+        photoImg.src = data.image;
+        photoFrame.style.display = 'block';
+      } else {
+        photoFrame.style.display = 'none';
+      }
+
+      document.getElementById('answerProgressBadge').innerText = `ענו 0 מתוך ${document.querySelectorAll('#connectedPlayersList div').length || 0} אורחים`;
+
+      // Render Kahoot-style options
+      const grid = document.getElementById('hostOptionsGrid');
+      grid.innerHTML = '';
+      grid.className = data.options.length <= 2 ? 'options-grid' : 'options-grid grid-4';
+
+      data.options.forEach((optText, index) => {
+        const btn = document.createElement('div');
+        btn.className = `option-btn opt-${index % 4}`;
+        btn.id = `hostOpt_${index}`;
+        btn.innerHTML = `
+          <div class="shape-icon">${optionShapes[index % 4]}</div>
+          <div class="opt-text">${optText}</div>
+        `;
+        grid.appendChild(btn);
+      });
+
+      // Reset timer visuals
+      currentQuestionDuration = data.totalDuration || currentQuestionDuration;
+      updateHostTimer(data.timer, currentQuestionDuration);
+    });
+
+    // Timer Tick
+    socket.on('timer_tick', (data) => {
+      updateHostTimer(data.timer, currentQuestionDuration);
+      if (window.soundEngine) {
+        if (data.timer <= 5 && data.timer > 0) {
+          window.soundEngine.playWarningTick();
+        } else if (data.timer % 5 === 0 && data.timer > 0) {
+          window.soundEngine.playTick();
+        }
+      }
+    });
+
+    function updateHostTimer(seconds, total) {
+      const circle = document.getElementById('hostTimerCircle');
+      const bar = document.getElementById('hostProgressBarFill');
+      circle.innerText = seconds;
+      
+      const pct = Math.max(0, Math.min(100, (seconds / total) * 100));
+      bar.style.width = pct + '%';
+
+      if (seconds <= 5) {
+        circle.classList.add('timer-warning');
+      } else {
+        circle.classList.remove('timer-warning');
+      }
+    }
+
+    // Answer Progress updated
+    socket.on('answer_progress', (data) => {
+      document.getElementById('answerProgressBadge').innerText = `ענו ${data.answeredCount} מתוך ${data.totalPlayers} אורחים`;
+    });
+
+    // Reveal answer early button
+    document.getElementById('revealAnswerEarlyBtn').addEventListener('click', () => {
+      if (window.soundEngine) window.soundEngine.playClick();
+      socket.emit('next_question', { roomCode: currentRoomCode });
+    });
+
+    // Pause/Resume button
+    let isPaused = false;
+    document.getElementById('pauseTimerBtn').addEventListener('click', () => {
+      socket.emit('toggle_pause', { roomCode: currentRoomCode });
+    });
+
+    socket.on('timer_paused_state', (data) => {
+      isPaused = data.isPaused;
+      document.getElementById('pauseTimerBtn').innerText = isPaused ? '▶️ המשך' : '⏸️ עצור';
+    });
+
+    // Question Ended & Reveal
+    socket.on('question_ended', (data) => {
+      if (window.soundEngine) window.soundEngine.playCorrect();
+      if (window.confetti) {
+        confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
+      }
+
+      document.getElementById('revealAnswerEarlyBtn').style.display = 'none';
+      document.getElementById('nextQuestionBtn').style.display = 'block';
+
+      // Highlight correct & dim others
+      document.querySelectorAll('.option-btn').forEach((btn, idx) => {
+        if (idx === data.correctIndex) {
+          btn.classList.add('is-correct');
+        } else {
+          btn.classList.add('is-wrong');
+        }
+      });
+
+      // Show explanation
+      if (data.explanation) {
+        document.getElementById('hostExplanationBox').style.display = 'block';
+        document.getElementById('hostExplanationText').innerText = data.explanation;
+      }
+
+      // Show Top 5 leaderboard
+      if (Array.isArray(data.leaderboard)) {
+        document.getElementById('hostMiniLeaderboard').style.display = 'block';
+        const miniList = document.getElementById('hostMiniLeaderboardList');
+        miniList.innerHTML = '';
+        const top5 = data.leaderboard.slice(0, 5);
+        top5.forEach((p, idx) => {
+          const item = document.createElement('div');
+          item.className = `leaderboard-item rank-${idx + 1}`;
+          const streakHtml = p.streak >= 2 ? ` <span title="${p.streak} תשובות נכונות ברצף!">🔥 ${p.streak}</span>` : '';
+          item.innerHTML = `
+            <span>#${idx + 1} &nbsp; <strong>${p.name}</strong> ${streakHtml}</span>
+            <span style="color: var(--gold-accent);">${p.score.toLocaleString()} נקודות</span>
+          `;
+          miniList.appendChild(item);
+        });
+      }
+    });
+
+    // Next Question Button
+    document.getElementById('nextQuestionBtn').addEventListener('click', () => {
+      if (window.soundEngine) window.soundEngine.playClick();
+      socket.emit('next_question', { roomCode: currentRoomCode });
+    });
+
+    // End Game Early
+    document.getElementById('endGameEarlyBtn').addEventListener('click', () => {
+      if (confirm('האם אתה בטוח שברצונך לסיים את המשחק כעת ולהכריז על המנצחים?')) {
+        socket.emit('end_game_early', { roomCode: currentRoomCode });
+      }
+    });
+
+    // Grand Finale Finished Game
+    socket.on('game_finished', (data) => {
+      if (window.soundEngine) window.soundEngine.playFanfare();
+      
+      // Massive Confetti Fireworks
+      if (window.confetti) {
+        const duration = 4000;
+        const end = Date.now() + duration;
+        const frame = () => {
+          confetti({ particleCount: 7, angle: 60, spread: 55, origin: { x: 0 } });
+          confetti({ particleCount: 7, angle: 120, spread: 55, origin: { x: 1 } });
+          if (Date.now() < end) requestAnimationFrame(frame);
+        };
+        frame();
+      }
+
+      document.getElementById('activeGameMonitor').style.display = 'none';
+      document.getElementById('finishedPodiumView').style.display = 'block';
+
+      // 1st Place
+      if (data.winner) {
+        document.getElementById('podium1Name').innerText = data.winner.name;
+        document.getElementById('podium1Score').innerText = `${data.winner.score.toLocaleString()} נק׳`;
+      }
+      // 2nd Place
+      if (data.secondPlace) {
+        document.getElementById('podium2Name').innerText = data.secondPlace.name;
+        document.getElementById('podium2Score').innerText = `${data.secondPlace.score.toLocaleString()} נק׳`;
+      }
+      // 3rd Place
+      if (data.thirdPlace) {
+        document.getElementById('podium3Name').innerText = data.thirdPlace.name;
+        document.getElementById('podium3Score').innerText = `${data.thirdPlace.score.toLocaleString()} נק׳`;
+      }
+
+      // Stats
+      if (data.stats) {
+        document.getElementById('statFastestPlayer').innerText = data.stats.fastestPlayerName || '-';
+        document.getElementById('statAccuratePlayer').innerText = data.stats.mostAccuratePlayerName || '-';
+      }
+
+      // Full Leaderboard
+      const fullList = document.getElementById('fullLeaderboardList');
+      fullList.innerHTML = '';
+      if (Array.isArray(data.leaderboard)) {
+        data.leaderboard.forEach((p, idx) => {
+          const item = document.createElement('div');
+          item.className = `leaderboard-item rank-${idx + 1}`;
+          item.innerHTML = `
+            <span>#${idx + 1} &nbsp; <strong>${p.name}</strong> (${p.correctCount || 0} תשובות נכונות)</span>
+            <span style="color: var(--gold-accent); font-weight: 800;">${p.score.toLocaleString()} נק׳</span>
+          `;
+          fullList.appendChild(item);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
