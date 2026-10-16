@@ -47,7 +47,9 @@
       <div class="input-group">
         <label class="input-label" for="timerDurationSelect">⏱️ זמן מענה לכל שאלה:</label>
         <select id="timerDurationSelect" class="input-field">
-          <option value="20">20 שניות (מהיר וקצבי)</option>
+          <option value="10">10 שניות (בזק / סופר מהיר ⚡)</option>
+          <option value="15">15 שניות (קצבי ומהיר ⏱️)</option>
+          <option value="20">20 שניות (מהיר)</option>
           <option value="30" selected>30 שניות (מומלץ לאירועים ולמשפחה)</option>
           <option value="45">45 שניות (קצב רגוע יותר)</option>
           <option value="60">60 שניות (זמן ממושך)</option>
@@ -68,29 +70,32 @@
 
     <!-- Lobby / Dashboard View (Projector Waiting Room) -->
     <main id="lobbyDashboardView" class="glass-card" style="display: none;">
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center;">
+      <div style="display: grid; grid-template-columns: 1.15fr 1fr; gap: 28px; align-items: center;">
         
-        <!-- Right side: QR & Join Info -->
+        <!-- Right side: Giant QR & Join Info for Presentation Screen -->
         <div class="qr-box" style="margin: 0;">
-          <div class="qr-label">📱 סרקו עם המצלמה בטלפון להצטרפות:</div>
-          <img id="qrImage" src="" alt="קוד QR להצטרפות" style="max-width: 250px; width: 100%; border-radius: 16px; border: 3px solid var(--purple-dark); margin: 6px 0;">
-          <div id="joinUrlText" style="color: var(--purple-dark); font-weight: 800; font-size: 0.95rem; direction: ltr; background: rgba(226, 217, 243, 0.4); padding: 8px 12px; border-radius: 8px; width: 100%; text-align: center; word-break: break-all;"></div>
+          <div class="qr-label">📱 סרקו עם המצלמה מהמקום להצטרפות:</div>
+          <img id="qrImage" class="qr-presentation-img" src="" alt="קוד QR להצטרפות">
+          <div id="joinUrlText" style="color: var(--purple-dark); font-weight: 800; font-size: 1.05rem; direction: ltr; background: rgba(226, 217, 243, 0.4); padding: 8px 14px; border-radius: 10px; width: 100%; text-align: center; word-break: break-all; margin-top: 4px;"></div>
+          <button id="openMegaQrBtn" class="btn-secondary" type="button" style="margin-top: 10px; background: rgba(157,78,221,0.12); border-color: var(--purple-primary); color: #2A0845; font-weight: 800; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;">
+            🔍 לחצו כאן להגדלת ה-QR למסך ענק (לסריקה מרחוק באולם)
+          </button>
         </div>
 
         <!-- Left side: Eden's Photo & Room Code & Action -->
         <div style="text-align: center; display: flex; flex-direction: column; align-items: center;">
-          <div class="eden-hero-frame" style="max-width: 220px; margin-bottom: 12px;">
-            <img src="images/eden_swing.jpg" alt="עדן על הנדנדה" style="height: 200px;">
+          <div class="eden-hero-frame" style="max-width: 240px; margin-bottom: 12px;">
+            <img src="images/eden_swing.jpg" alt="עדן על הנדנדה" style="height: 210px;">
           </div>
 
-          <div style="color: var(--text-muted); font-size: 1.05rem; font-weight: 600;">קוד חדר לכניסה מהירה:</div>
-          <div id="displayRoomCode" style="font-size: 3.8rem; font-weight: 900; color: var(--gold-accent); letter-spacing: 5px; text-shadow: 0 0 25px rgba(255, 209, 102, 0.6); line-height: 1.1; margin: 4px 0 10px;">----</div>
+          <div style="color: var(--text-muted); font-size: 1.15rem; font-weight: 700;">קוד חדר להקלדה ידנית:</div>
+          <div id="displayRoomCode" style="font-size: 4.2rem; font-weight: 900; color: var(--gold-accent); letter-spacing: 6px; text-shadow: 0 0 25px rgba(255, 209, 102, 0.6); line-height: 1.1; margin: 4px 0 10px;">----</div>
           
           <div style="margin-bottom: 14px;">
-            <span class="badge" id="playerCountBadge" style="font-size: 1.15rem; padding: 6px 20px;">0 אורחים מחוברים</span>
+            <span class="badge" id="playerCountBadge" style="font-size: 1.25rem; padding: 8px 24px;">0 אורחים מחוברים</span>
           </div>
 
-          <button id="startGameBtn" class="btn-primary" style="font-size: 1.25rem; padding: 16px 22px; width: 100%; max-width: 280px;">
+          <button id="startGameBtn" class="btn-primary" style="font-size: 1.35rem; padding: 18px 26px; width: 100%; max-width: 320px;">
             🚀 מתחילים את המשחק!
           </button>
         </div>
@@ -121,6 +126,7 @@
           <span id="answerProgressBadge" style="color: var(--gold-accent); font-weight: 800; font-size: 1.05rem; background: rgba(0,0,0,0.3); padding: 5px 14px; border-radius: 30px; border: 1px solid rgba(255,209,102,0.3);">
             ענו 0 מתוך 0 אורחים
           </span>
+          <button id="showQrInGameBtn" class="btn-secondary" type="button" style="width: auto; padding: 6px 14px; font-size: 0.95rem;">📱 QR להצטרפות</button>
           <button id="pauseTimerBtn" class="btn-secondary" style="width: auto; padding: 6px 14px; font-size: 0.95rem;">⏸️ עצור</button>
         </div>
       </div>
@@ -256,6 +262,30 @@
 
   </div>
 
+  <!-- Full-Screen Mega QR Modal for Presentation/Projector Screen -->
+  <div id="megaQrModal" class="qr-modal-backdrop" style="display: none;">
+    <div class="qr-modal-card">
+      <button id="closeMegaQrBtn" class="qr-modal-close-btn" type="button" title="סגור חלון">✕</button>
+      <div style="font-size: 1.15rem; font-weight: 800; color: #7B2CBF; margin-bottom: 4px;">🌸 אירוע בת המצווה של עדן 🌸</div>
+      <h2 style="color: #2A0845; font-size: 2rem; font-weight: 900; margin-bottom: 6px;">סרקו עכשיו מהמקום עם הטלפון! 📲</h2>
+      <p style="color: #555; font-size: 1.1rem; margin-bottom: 10px;">סריקה מהירה במצלמה מכל מקום באולם</p>
+      
+      <img id="qrImageMega" class="qr-mega-img" src="" alt="קוד QR ענק להקרנה">
+      
+      <div style="margin-top: 10px;">
+        <span style="font-size: 1.15rem; color: #333; font-weight: 700;">או היכנסו בדפדפן והקלידו קוד חדר:</span>
+        <div id="displayRoomCodeMega" style="font-size: 3.8rem; font-weight: 900; color: #7B2CBF; letter-spacing: 6px; margin: 4px 0 10px; line-height: 1.1;">----</div>
+        <div id="joinUrlTextMega" style="font-size: 1.05rem; color: #2A0845; direction: ltr; font-weight: 800; background: #F3E8FF; padding: 8px 16px; border-radius: 10px; display: inline-block; word-break: break-all;"></div>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <button id="closeMegaQrBtnBottom" class="btn-primary" type="button" style="background: linear-gradient(135deg, #7B2CBF, #9D4EDD); width: auto; padding: 12px 36px; display: inline-flex; margin: 0 auto; font-size: 1.15rem;">
+          סגור וחזור למסך המשחק ➔
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script src="/socket.io/socket.io.js"></script>
   <script src="audio.js"></script>
   <script>
@@ -316,6 +346,9 @@
             .then(qrRes => {
               if (qrRes.qr) {
                 document.getElementById('qrImage').src = qrRes.qr;
+                document.getElementById('qrImageMega').src = qrRes.qr;
+                document.getElementById('displayRoomCodeMega').innerText = data.roomCode;
+                document.getElementById('joinUrlTextMega').innerText = joinUrl;
               }
             });
         })
@@ -325,9 +358,42 @@
           fetch(`/api/qr?url=${encodeURIComponent(fallbackUrl)}`)
             .then(r => r.json())
             .then(qrRes => {
-              if (qrRes.qr) document.getElementById('qrImage').src = qrRes.qr;
+              if (qrRes.qr) {
+                document.getElementById('qrImage').src = qrRes.qr;
+                document.getElementById('qrImageMega').src = qrRes.qr;
+                document.getElementById('displayRoomCodeMega').innerText = data.roomCode;
+                document.getElementById('joinUrlTextMega').innerText = fallbackUrl;
+              }
             });
         });
+    });
+
+    // Mega QR Modal Listeners
+    const megaModal = document.getElementById('megaQrModal');
+    const openMegaQr = () => {
+      megaModal.style.display = 'flex';
+      if (window.soundEngine) window.soundEngine.playClick();
+    };
+    const closeMegaQr = () => {
+      megaModal.style.display = 'none';
+      if (window.soundEngine) window.soundEngine.playClick();
+    };
+
+    document.getElementById('openMegaQrBtn').addEventListener('click', openMegaQr);
+    const showQrInGameBtn = document.getElementById('showQrInGameBtn');
+    if (showQrInGameBtn) showQrInGameBtn.addEventListener('click', openMegaQr);
+
+    document.getElementById('closeMegaQrBtn').addEventListener('click', closeMegaQr);
+    document.getElementById('closeMegaQrBtnBottom').addEventListener('click', closeMegaQr);
+
+    megaModal.addEventListener('click', (e) => {
+      if (e.target === megaModal) closeMegaQr();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && megaModal.style.display === 'flex') {
+        closeMegaQr();
+      }
     });
 
     // Player joined / updated

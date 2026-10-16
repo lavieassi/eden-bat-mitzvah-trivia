@@ -66,10 +66,11 @@ app.get('/api/qr', async (req, res) => {
   if (!url) return res.status(400).json({ error: 'Missing url parameter' });
   try {
     const qrDataUrl = await QRCode.toDataURL(url, {
-      margin: 1,
-      width: 340,
+      margin: 2,
+      width: 720,
+      errorCorrectionLevel: 'M',
       color: {
-        dark: '#4A154B', // Royal festive purple dark module
+        dark: '#150024', // High contrast deep purple/black for easy camera focus from far distance
         light: '#FFFFFF'
       }
     });
